@@ -14,7 +14,7 @@ class AuthController extends Controller
     use ApiResponse;
 
     /**
-     * Store and send  new email.
+     * Login user.
      * @param LoginRequest $request
      * @return object
      */
@@ -35,7 +35,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Store and send  new email.
+     * Logout user
      * @param null
      * @return object
      */

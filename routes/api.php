@@ -18,6 +18,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         });
 
         Route::prefix('preferences')->group(function () {
+
+            Route::get('/', [App\Http\Controllers\Api\PreferenceController::class, 'getPreference']);
             Route::post('/enable-2fa', [App\Http\Controllers\Api\PreferenceController::class, 'enable2fa']);
             Route::post('/disable-2fa', [App\Http\Controllers\Api\PreferenceController::class, 'disable2fa']);
         });

@@ -53,13 +53,32 @@ class User extends Authenticatable
     }
 
     /**
-     * Store and send  new email.
+     * get user 2fa status.
      * @param null
      * @return boolean
      */
     public function get2FaStatus(): bool
     {
         return Preference::where('user_id',$this->id)->first()->is_2fa_enabled;
+    }
+
+    /**
+     * enable user 2fa.
+     * @param null
+     * @return null
+     */
+    public function  enable2FA()
+    {
+        Preference::where("user_id", $this->id)->update(["is_2fa_enabled" => true]);
+    }
+
+    /**
+     * disable user 2fa.
+     * @param null
+     * @return null
+     */
+    public function  disable2Fa(){
+        Preference::where("user_id", $this->id)->update(["is_2fa_enabled" => false]);
     }
 
 
