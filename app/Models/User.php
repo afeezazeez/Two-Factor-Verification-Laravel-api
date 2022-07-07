@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Observers\UserObserver;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -41,4 +42,27 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     *  Observe model to listen to certain events
+     *
+     */
+    protected static function booted()
+    {
+       self::observe(UserObserver::class);
+    }
+
+    /**
+     * Store and send  new email.
+     * @param null
+     * @return boolean
+     */
+    public function get2FaStatus(): bool
+    {
+        return Preference::where('user_id',$this->id)->first()->is_2fa_enabled;
+    }
+
+
+
+
 }

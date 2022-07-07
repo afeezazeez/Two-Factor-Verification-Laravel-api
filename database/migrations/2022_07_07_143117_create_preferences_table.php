@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('preferences', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');
-            $table->boolean('2fa_enabled')->default(0);
+            $table->boolean('is_2fa_enabled')->default(0);
             $table->timestamps();
         });
     }

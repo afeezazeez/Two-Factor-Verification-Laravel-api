@@ -25,7 +25,10 @@ class AuthController extends Controller
         }
 
         return $this->success(
-            ['token' => auth()->user()->createToken('API Token')->plainTextToken]
+            [
+                'token' => auth()->user()->createToken('API Token')->plainTextToken,
+                '2fa_status'=>auth()->user()->get2FaStatus()
+            ]
             ,'Login success',
             Response::HTTP_OK
         );
