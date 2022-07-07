@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::post('/auth/login', [App\Http\Controllers\Api\AuthController::class, 'login']);
+Route::post('/users/preferences/2fa-verify', [App\Http\Controllers\Api\PreferenceController::class, 'verify']);
 
 
 // protected routes

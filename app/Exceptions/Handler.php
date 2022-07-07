@@ -4,6 +4,8 @@ namespace App\Exceptions;
 
 use App\Traits\ApiResponse;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Jerry\JWT\Exceptions\TokenExpiredException;
+use Jerry\JWT\Exceptions\TokenFormatException;
 use Throwable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -52,6 +54,16 @@ class Handler extends ExceptionHandler
         if($e instanceof  AuthenticationException ){
             return $this->error('Unauthenticated', Response::HTTP_UNAUTHORIZED, null);
         }
+
+        if($e instanceof  TokenFormatException ){
+            return $this->error('Token is Invalid', Response::HTTP_UNAUTHORIZED, null);
+        }
+
+        if($e instanceof  TokenExpiredException ){
+            return $this->error('Token has expired', Response::HTTP_UNAUTHORIZED, null);
+        }
+
+
 
         return $this->error('Error handling request. Please try again', Response::HTTP_INTERNAL_SERVER_ERROR, null);
     }

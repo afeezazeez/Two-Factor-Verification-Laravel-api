@@ -13,6 +13,8 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    protected $dates=['two_factor_expires_at'];
+
     /**
      * The attributes that are mass assignable.
      *
