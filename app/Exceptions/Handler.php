@@ -2,11 +2,17 @@
 
 namespace App\Exceptions;
 
+use App\Traits\ApiResponse;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Http\Response;
+use Illuminate\Auth\AuthenticationException;
 
 class Handler extends ExceptionHandler
 {
+    use ApiResponse;
     /**
      * A list of exception types with their corresponding custom log levels.
      *
@@ -36,15 +42,17 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
-    /**
-     * Register the exception handling callbacks for the application.
-     *
-     * @return void
-     */
-    public function register()
+    public function render($request, Throwable $e)
     {
-        $this->reportable(function (Throwable $e) {
-            //
-        });
+
+        if ($e instanceof ModelNotFoundException || $e instanceof NotFoundHttpException) {
+            return $this->error('Resource not found', Response::HTTP_NOT_FOUND, null);
+        }
+
+        if($e instanceof  AuthenticationException ){
+            return $this->error('Unauthenticated', Response::HTTP_UNAUTHORIZED, null);
+        }
+
+        return $this->error('Error handling request. Please try again', Response::HTTP_INTERNAL_SERVER_ERROR, null);
     }
 }
