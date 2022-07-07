@@ -25,13 +25,13 @@ class AuthController extends Controller
     {
         // Check if email exists
 
-        if (!$user = User::where('email',$request->validated()['email'])->first()) {
+        if (!$user = User::where('email',$request['email'])->first()) {
             return $this->error("This email is not associated with any user", Response::HTTP_UNAUTHORIZED);
         }
 
         // Check if password matches with DB Password
 
-        if(!Hash::check($request->validated()['password'], $user->password)){
+        if(!Hash::check($request['password'], $user->password)){
             return $this->error("Incorrect password detected!", Response::HTTP_UNAUTHORIZED);
         }
 

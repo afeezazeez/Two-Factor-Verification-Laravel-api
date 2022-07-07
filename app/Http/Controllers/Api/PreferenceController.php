@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TwoFactorRequest;
+use App\Jobs\SendTwoFactorToken;
 use App\Models\User;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Response;
@@ -55,12 +56,12 @@ class PreferenceController extends Controller
 
     }
 
-//    /**
-//     * enable user 2fa
-//     * @param null
-//     * @return null
-//     */
-    public function verify(TwoFactorRequest $request)
+    /**
+     * enable user 2fa
+     * @param TwoFactorRequest $request
+     * @return object
+     */
+    public function verify(TwoFactorRequest $request): object
     {
         if(!$request->bearerToken()){
             return $this->error('Token is required', Response::HTTP_UNAUTHORIZED, null);
@@ -98,6 +99,38 @@ class PreferenceController extends Controller
 
     }
 
+
+    /**
+     * enable user 2fa
+     * @param null
+     * @return object
+     */
+    public function resend(): object
+    {
+        if(!request()->bearerToken()){
+            return $this->error('Token is required', Response::HTTP_UNAUTHORIZED, null);
+        }
+
+        // decode jwt token and retrieve user id
+        $userId = JWT::decode(request()->bearerToken())['user_id'];
+
+        $user = User::where('id',$userId)->first();
+
+        // generate 2fa code
+        $user->generateTwoFactorCode();
+
+        // Send token to User Via email
+        SendTwoFactorToken::dispatch($user);
+
+
+        return $this->success(
+            null
+            ,'Token has been resent',
+            Response::HTTP_OK
+        );
+
+
+    }
 
 
 }
