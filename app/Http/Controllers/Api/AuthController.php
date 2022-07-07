@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use App\Jobs\SendTwoFactorToken;
 use App\Models\User;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Response;
@@ -40,6 +41,9 @@ class AuthController extends Controller
 
             // generate 2fa code
             $user->generateTwoFactorCode();
+
+            // Send token to User Via email
+            SendTwoFactorToken::dispatch($user);
 
             return $this->success(
                 [
