@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use App\Models\User;
 use App\Traits\ApiResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Jerry\JWT\JWT;
 
 class AuthController extends Controller
 {
@@ -20,18 +22,45 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request): object
     {
-        if (!Auth::attempt($request->all())) {
-            return $this->error("Credentials not match", Response::HTTP_UNAUTHORIZED);
+        // Check if email exists
+
+        if (!$user = User::where('email',$request->validated()['email'])->first()) {
+            return $this->error("This email is not associated with any user", Response::HTTP_UNAUTHORIZED);
         }
 
-        return $this->success(
-            [
-                'token' => auth()->user()->createToken('API Token')->plainTextToken,
-                '2fa_status'=>auth()->user()->get2FaStatus()
-            ]
-            ,'Login success',
-            Response::HTTP_OK
-        );
+        // Check if password matches with DB Password
+
+        if(!Hash::check($request->validated()['password'], $user->password)){
+            return $this->error("Incorrect password detected!", Response::HTTP_UNAUTHORIZED);
+        }
+
+        // Check If 2FA is enabled
+
+        if($user->get2FaStatus()){
+
+            // generate 2fa code
+            $user->generateTwoFactorCode();
+
+            return $this->success(
+                [
+                    '2fa_token' => JWT::encode( ['user_id'=>$user->id]),
+                    '2fa_status'=>$user->get2FaStatus()
+                ]
+                ,'Two Factor Verification is required!',
+                Response::HTTP_OK
+            );
+
+        } else{
+            auth()->login($user);
+            return $this->success(
+                [
+                    'token' => auth()->user()->createToken('API Token')->plainTextToken,
+                    '2fa_status'=>auth()->user()->get2FaStatus()
+                ]
+                ,'Login success',
+                Response::HTTP_OK
+            );
+        }
     }
 
     /**

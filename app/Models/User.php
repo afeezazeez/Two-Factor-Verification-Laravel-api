@@ -81,6 +81,20 @@ class User extends Authenticatable
         Preference::where("user_id", $this->id)->update(["is_2fa_enabled" => false]);
     }
 
+    public function generateTwoFactorCode(){
+        $this->timestamps = false;
+        $this->two_factor_token =  mt_rand(100000,999999);
+        $this->two_factor_expires_at = now()->addMinutes(10);
+        $this->save();
+    }
+
+    public function resetTwoFactorCode(){
+        $this->timestamps = false;
+        $this->two_factor_token = null;
+        $this->two_factor_expires_at = null;
+        $this->save();
+    }
+
 
 
 
