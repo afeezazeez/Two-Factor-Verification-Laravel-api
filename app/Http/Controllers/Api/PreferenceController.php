@@ -57,7 +57,7 @@ class PreferenceController extends Controller
     }
 
     /**
-     * enable user 2fa
+     * verify 2fa token
      * @param TwoFactorRequest $request
      * @return object
      */
@@ -101,7 +101,7 @@ class PreferenceController extends Controller
 
 
     /**
-     * enable user 2fa
+     * resend 2fa token
      * @param null
      * @return object
      */
